@@ -58,7 +58,7 @@ CREATE TABLE annonces (
     prix DECIMAL(10,2) NOT NULL CHECK (prix >= 0),
     livraison_postale TINYINT(1) NOT NULL DEFAULT 0,
     livraison_main TINYINT(1) NOT NULL DEFAULT 0,
-    statut ENUM('EN_VENTE', 'VENDU', 'LIVRE', 'SUPPRIME') 
+    statut ENUM('EN_VENTE', 'VENDU','RESERVER', 'LIVRE', 'SUPPRIME') 
         NOT NULL DEFAULT 'EN_VENTE',
     date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
