@@ -1,0 +1,248 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: poppins;
+}
+body {
+    font-family: 'Poppins', sans-serif; 
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
+}
+.product-image img {
+    width: 500px;
+    border-radius: 10px;
+    height: 500px;
+    margin-left: 100px;
+}
+.product-details {
+    margin-left: 20px;
+}
+.product-details h2 {
+    margin-bottom: 10px;
+    margin-top: 20px;
+    font-size: 30px;
+}
+.product-details h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.product-details p {
+    font-size: 20px;
+    color: #555;
+}
+.butt{
+    
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
+}
+.reserver-button{
+    
+        width: 250px;
+        padding: 12px;
+        background: rgb(186, 154, 228);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        font-size: 22px;
+       
+
+}
+.acheter-button{
+    width: 250px;
+        padding: 12px;
+        background: rgb(69, 18, 136);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        font-size: 22px;
+   
+}
+
+.livraison-options {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd; 
+}
+
+.livraison-options p {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+}
+.produits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+
+
+
+.produit {
+    width: 260px;
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: 0.25s ease;
+    cursor: pointer;
+}
+
+.produit:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+
+
+
+.image-container {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+
+
+.produit p {
+    font-size: 17px;
+    color: #333;
+    font-weight: 500;
+    padding: 10px 18px 0;
+}
+
+
+.produit h2 {
+    font-size: 18px;
+    color: #222;
+    padding: 0 18px 18px;
+    font-weight: 600;
+}
+.product-suggestions {
+    padding: 40px 10%;
+    background-color: #f7f7f7;
+    margin-top: 40px;
+}
+
+.tab-header {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab-link {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+    font-weight: 500;
+    margin-right: 30px;
+    padding: 10px 0;
+    cursor: pointer;
+    color: #cfcfcf;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s, border-bottom-color 0.3s;
+}
+
+.tab-link.active {
+    color: #000; 
+    border-bottom-color: #000; 
+    font-weight: 700;
+}
+
+.tab-link:hover {
+    color: #555;
+}
+
+.tab-content {
+    display: none; 
+    padding-top: 20px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content .no-results {
+    color: #888;
+    padding: 20px 0;
+}
+/* --- Mise à jour de la Galerie d'Images (product-image) --- */
+
+.product-image {
+    flex: 1; 
+    max-width: 500px;
+    /* Supprimer la marge bottom car tout est dans gallery-wrapper */
+}
+
+.gallery-wrapper {
+    display: flex; /* Active l'affichage côte à côte */
+    gap: 15px; /* Espace entre la colonne de miniatures et la grande image */
+}
+
+/* Colonne pour les miniatures */
+.thumbnails-column {
+    display: flex;
+    flex-direction: column; /* Les miniatures sont empilées verticalement */
+    gap: 10px;
+}
+
+/* Conteneur de l'image principale */
+.main-image-container {
+    width: 100%;
+    /* Permet à la grande image de remplir l'espace restant */
+}
+
+#main-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+
+/* --- Styles pour les Miniatures (révisés) --- */
+
+.thumbnails-column .thumbnail-item {
+    width: 60px; /* Taille réduite pour la colonne verticale */
+    height: 60px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    object-fit: cover;
+    transition: all 0.2s ease-in-out;
+    filter: grayscale(100%); 
+    opacity: 0.6;
+}
+
+.thumbnails-column .thumbnail-item:hover, 
+.thumbnails-column .thumbnail-item.active {
+    filter: grayscale(0%); /* Passe en couleur */
+    opacity: 1;
+    border-color: #000; /* Bordure noire pour indiquer qu'elle est sélectionnée */
+}
