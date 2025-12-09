@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $DB_HOTE = "localhost";
 $DB_NOM = "ebazar";
 $DB_UTILISATEUR = "root";
-$DB_MOTDEPASSE = "m.HN010423@";
+$DB_MOTDEPASSE = "";
 
 
 try {
