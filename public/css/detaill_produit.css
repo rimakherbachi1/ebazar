@@ -192,30 +192,25 @@ body {
     color: #888;
     padding: 20px 0;
 }
-/* --- Mise à jour de la Galerie d'Images (product-image) --- */
 
 .product-image {
     flex: 1; 
     max-width: 500px;
-    /* Supprimer la marge bottom car tout est dans gallery-wrapper */
 }
 
 .gallery-wrapper {
-    display: flex; /* Active l'affichage côte à côte */
-    gap: 15px; /* Espace entre la colonne de miniatures et la grande image */
+    display: flex; 
+    gap: 15px; 
 }
 
-/* Colonne pour les miniatures */
 .thumbnails-column {
     display: flex;
-    flex-direction: column; /* Les miniatures sont empilées verticalement */
+    flex-direction: column; 
     gap: 10px;
 }
 
-/* Conteneur de l'image principale */
 .main-image-container {
     width: 100%;
-    /* Permet à la grande image de remplir l'espace restant */
 }
 
 #main-image {
@@ -226,10 +221,9 @@ body {
 }
 
 
-/* --- Styles pour les Miniatures (révisés) --- */
 
 .thumbnails-column .thumbnail-item {
-    width: 60px; /* Taille réduite pour la colonne verticale */
+    width: 60px; 
     height: 60px;
     cursor: pointer;
     border: 2px solid transparent;
@@ -242,7 +236,7 @@ body {
 
 .thumbnails-column .thumbnail-item:hover, 
 .thumbnails-column .thumbnail-item.active {
-    filter: grayscale(0%); /* Passe en couleur */
+    filter: grayscale(0%); 
     opacity: 1;
-    border-color: #000; /* Bordure noire pour indiquer qu'elle est sélectionnée */
+    border-color: #000; 
 }

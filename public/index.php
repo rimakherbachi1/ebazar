@@ -7,6 +7,11 @@ $execute_params = [];
 $titre_section = "Les dernières annonces mises en ligne";
 $sous_titre = "Nouveautés";
 
+if (isset($_SESSION['id'])) {
+    $where_clause .= " AND a.vendeur_id != :user_id";
+    $execute_params['user_id'] = $_SESSION['id'];
+}
+
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $categorie_id = (int)$_GET['id'];
     
@@ -22,13 +27,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         
         $titre_section = "Annonces dans la catégorie " . $nom_categorie;
         $sous_titre = "Catégorie " . $nom_categorie;
-        
-    } else {
-        $where_clause = "a.statut = 'EN_VENTE'"; 
     }
 }
-
-
 
 $sql_annonces = "
     SELECT a.*, 

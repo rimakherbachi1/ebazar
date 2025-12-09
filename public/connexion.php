@@ -1,4 +1,5 @@
 <?php
+
 include '../config/config.php';
 
 $erreur = "";
@@ -19,8 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['role'] = $user['role'];
 
        
-        header("Location: index.php");
-        exit();
+       if ($user['role'] === 'ADMIN') {
+            header("Location: ../admin/admin_index.php");
+            exit();
+        } else { 
+            header("Location: index.php");
+            exit();
+        }
 
     } else {
         $erreur = "Identifiants incorrects.";

@@ -62,7 +62,7 @@ $autres_annonces = $stmt_autres_annonces->fetchAll(PDO::FETCH_ASSOC);
 
 $categorie_actuelle_id = $annonce['categorie_id'];
 
-$stmt_similaires = $pdo->prepare("
+$sql_similaires = "
     SELECT 
         a.id, a.titre, a.prix,
         (SELECT chemin FROM photos WHERE annonce_id = a.id ORDER BY position ASC LIMIT 1) AS photo_principale
@@ -70,16 +70,24 @@ $stmt_similaires = $pdo->prepare("
     WHERE 
         a.categorie_id = :cat_id
         AND a.statut = 'EN_VENTE'
-        AND a.id != :current_id
-    ORDER BY RAND()
-    LIMIT 4
-");
+        AND a.id != :current_id";
 
-$stmt_similaires->execute([
+$params_similaires = [
     'cat_id' => $categorie_actuelle_id,
     'current_id' => $annonce_principale_id
-]);
+];
+
+if (isset($_SESSION['id'])) {
+    $sql_similaires .= " AND a.vendeur_id != :user_id";
+    $params_similaires['user_id'] = $_SESSION['id'];
+}
+
+$sql_similaires .= " ORDER BY RAND() LIMIT 4";
+
+$stmt_similaires = $pdo->prepare($sql_similaires);
+$stmt_similaires->execute($params_similaires);
 $annonces_similaires = $stmt_similaires->fetchAll(PDO::FETCH_ASSOC);
+
 
 
 $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll(PDO::FETCH_ASSOC);

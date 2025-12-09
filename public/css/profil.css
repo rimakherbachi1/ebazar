@@ -5,65 +5,63 @@
     font-family: poppins;
 }
 
-
-
-
-header input{
-    padding: 5px;
-     width: 550px;
-     background-color: white;
-     border-radius: 10px;
-    border: 1px solid lightgray;
-    margin-top: 20px;
-    margin-right: 350px;
-     
+.profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr; 
+            gap: 40px;
+            padding: 40px 0;
+        }
+        
+        
+.solde-section, .profile-details {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+.solde-section h3 { 
+    font-size: 1.2em;
+     color: #555;
+      margin-bottom: 10px; }
+.solde-section .solde-montant { 
+    font-size: 3em; 
+    font-weight: 700; 
+    color: #000; }
+.profile-details h3 { 
+    font-size: 1.5em; 
+    margin-bottom: 20px; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 5px; 
 }
-.icon{
-    background-color: transparent;
-    border: none;
+.form-group {
+     margin-bottom: 15px;
+     }
+
+.form-group label { 
+    display: block; 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    box-sizing: border-box; }
+
+.modifier-btn { 
+    background-color: 
+    rgb(69, 18, 136);
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 4px; 
     cursor: pointer;
-    margin: 20px;
-    margin-top: 50px;
-}
-.icon img{
-    height: 40px;
-} 
+    margin-top: 15px; 
+    float: right; }
+    
 
-.texte p{
-    color: white;
-    font-size: 27px;
-    margin-top: 120px;
-    margin-left: 100px;
-}
-.texte h2{
-    color: white;
-    font-size: 20px;
-    margin-top: 5px;
-    margin-left: 110px;
-}
-
-nav{
-    background-color:white;
-    height: 100px;
-    display: flex;
-    gap: 50px;
-    align-items: center;
-    margin-left: 230px;
-    
-}
-nav a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: rgb(145, 145, 145);
-    font-size: 23px;
-    font-family: 'Raleway', sans-serif;
-    
-   
-    
-}
-nav a:hover{
-    color: rgb(69, 18, 136);
-}
 
 
 

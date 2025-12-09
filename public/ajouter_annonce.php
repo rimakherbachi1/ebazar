@@ -1,0 +1,209 @@
+<?php
+include '../config/config.php'; 
+
+if (!isset($_SESSION['id'])) {
+    header("Location: connexion.php");
+    exit();
+}
+
+$current_user_id = $_SESSION['id'];
+$erreur = [];
+$success = "";
+
+$categories = $pdo->query("SELECT id, nom FROM categories ORDER BY nom ASC")->fetchAll(PDO::FETCH_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    $titre = trim($_POST['titre'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $prix = trim($_POST['prix'] ?? '');
+    $categorie_id = (int)($_POST['categorie_id'] ?? 0);
+    $livraison_postale = isset($_POST['livraison_postale']) ? 1 : 0;
+    $livraison_main = isset($_POST['livraison_main']) ? 1 : 0;
+
+    
+    if (empty($titre) || empty($description) || empty($prix) || $categorie_id === 0) {
+        $erreur[] = "Veuillez remplir tous les champs obligatoires.";
+    }
+    if ($prix <= 0 || !is_numeric($prix)) {
+        $erreur[] = "Le prix doit être un nombre positif.";
+    }
+    
+    $chemins_photos = [];
+    $dossier_uploads = __DIR__ . '/uploads/'; 
+    $photos_soumises = $_FILES['photos'] ?? [];
+
+    if (!empty($photos_soumises['name'][0])) {
+        
+        $nombre_fichiers = count($photos_soumises['name']);
+        
+        for ($i = 0; $i < min($nombre_fichiers, 5); $i++) { 
+            if ($photos_soumises['error'][$i] === UPLOAD_ERR_OK) {
+                
+                $nom_unique = uniqid('annonce_') . '_' . basename($photos_soumises['name'][$i]);
+                $chemin_destination = $dossier_uploads . $nom_unique;
+                
+                if (move_uploaded_file($photos_soumises['tmp_name'][$i], $chemin_destination)) {
+                    
+                    $chemins_photos[] = 'uploads/' . $nom_unique;
+                } else {
+                    $erreur[] = "Erreur lors du déplacement du fichier " . ($i + 1) . ".";
+                }
+            }
+        }
+    } else {
+        $erreur[] = "Veuillez télécharger au moins une photo.";
+    }
+
+    if (empty($erreur)) {
+        try {
+            $pdo->beginTransaction();
+
+            $insert_annonce = $pdo->prepare("
+                INSERT INTO annonces (vendeur_id, categorie_id, titre, description, prix, livraison_postale, livraison_main) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+            $insert_annonce->execute([
+                $current_user_id, 
+                $categorie_id, 
+                $titre, 
+                $description, 
+                $prix, 
+                $livraison_postale, 
+                $livraison_main
+            ]);
+            
+            $annonce_id = $pdo->lastInsertId();
+
+            $insert_photo = $pdo->prepare("
+                INSERT INTO photos (annonce_id, chemin, position) VALUES (?, ?, ?)
+            ");
+
+            foreach ($chemins_photos as $position => $chemin) {
+                $insert_photo->execute([$annonce_id, $chemin, $position + 1]);
+            }
+
+            $pdo->commit();
+            $success = "L'annonce a été ajoutée avec succès !";
+            
+            header("Location: mes_annonces.php");
+            exit();
+
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $erreur[] = "Erreur lors de l'enregistrement en base de données : " . $e->getMessage();
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une annonce - E-Bazar</title>
+    <link rel="stylesheet" href="../css/accuill.css?v=99">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/ajouter_annonce.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
+   
+</head>
+
+<body>
+<header class="navbar">
+    <div class="logo">
+        <span>E-Bazar</span><span class="dot">●</span>
+        <input type="text" placeholder="Que cherchez-vous ?">
+    </div>
+
+    <div>
+        <?php if (!isset($_SESSION['id'])): ?>
+            <a href="connexion.php"><strong>Se connecter</strong></a>
+            <a href="inscription.php" class="btn-outline">S'inscrire</a>
+        <?php else: ?>
+            <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+        <?php endif; ?>
+    </div>
+</header>
+
+<nav>
+    <a href="profil.php" ><p>Mon profil</p></a>
+    <a href="mes_ventes.php"><p>Mes Ventes</p></a>
+    <a href="mes_achats.php"> <p>Mes Achats</p></a>
+    <a href="mes_annonces.php"><p>Mes Annonces</p></a>
+</nav>
+
+<main>
+    <div class="texte">
+        <p>Vente</p>
+        <h2>Ajouter une Nouvelle Annonce</h2>
+    </div>
+
+    <div class="form-container">
+        
+        <?php if (!empty($erreur)): ?>
+            <ul class="error-list">
+                <?php foreach ($erreur as $err): ?>
+                    <li><?= htmlspecialchars($err) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <?php if (!empty($success)): ?>
+            <p class="success-message"><?= htmlspecialchars($success) ?></p>
+        <?php endif; ?>
+
+        <form method="POST" enctype="multipart/form-data">
+            
+            <div class="form-group">
+                <label for="titre">Titre de l'annonce (max 30 caractères) :</label>
+                <input type="text" id="titre" name="titre" required maxlength="30" value="<?= htmlspecialchars($_POST['titre'] ?? '') ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="categorie_id">Catégorie :</label>
+                <select id="categorie_id" name="categorie_id" required>
+                    <option value="">-- Choisir une catégorie --</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= $cat['id'] ?>" <?= (isset($_POST['categorie_id']) && (int)$_POST['categorie_id'] === (int)$cat['id']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($cat['nom']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description :</label>
+                <textarea id="description" name="description" rows="5" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="prix">Prix (€) :</label>
+                <input type="number" id="prix" name="prix" step="0.01" min="0.01" required value="<?= htmlspecialchars($_POST['prix'] ?? '') ?>">
+            </div>
+
+            <div class="form-group">
+                <label>Options de Livraison :</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="livraison_postale" name="livraison_postale" value="1" <?= isset($_POST['livraison_postale']) ? 'checked' : '' ?>>
+                    <label for="livraison_postale">Livraison postale</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="livraison_main" name="livraison_main" value="1" <?= isset($_POST['livraison_main']) ? 'checked' : '' ?>>
+                    <label for="livraison_main">Remise en main propre</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="photos">Photos (Max. 5 fichiers) :</label>
+                <input type="file" id="photos" name="photos[]" accept="image/*" multiple required>
+            </div>
+
+            <button type="submit" class="submit-btn">Soumettre l'Annonce</button>
+        </form>
+    </div>
+
+</main>
+</body>
+</html>
