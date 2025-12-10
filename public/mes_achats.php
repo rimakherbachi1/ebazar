@@ -113,7 +113,7 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
                 <?php if (!empty($achats_par_statut[$statut_achat])): ?>
                     <div class="produits">
                         <?php foreach ($achats_par_statut[$statut_achat] as $achat): ?>
-                            <div class="produit" onclick="window.location.href='annonce.php?id=<?= $achat['annonce_id'] ?>'">
+                            <div class="produit" >
                                 <div class="image-container">
                                     <?php if ($achat['photo_principale']): ?>
                                         <img src="../<?= $achat['photo_principale'] ?>" alt="<?= htmlspecialchars($achat['titre']) ?>">
