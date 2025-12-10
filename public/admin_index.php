@@ -21,13 +21,16 @@ include '../config/config.php';
         <span>E-Bazar</span><span class="dot">●</span>
         <input type="text" placeholder="Que cherchez-vous ?">
     </div>
-
+    <div>
+        <a href=""><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+       
+    </div>
 </header>
 
 <nav>
-    <a href="profil.php" ><p>UTULISATEURS</p></a>
-    <a href="mes_ventes.php"><p>ANNONCES</p></a>
-    <a href="mes_achats.php"> <p>CATEGORIES</p></a>
+    <a href="admin_utilisateurs.php" ><p>UTULISATEURS</p></a>
+    <a href="admin_annonces.php"><p>ANNONCES</p></a>
+    <a href="admin_categories.php"> <p>CATEGORIES</p></a>
 </nav>
 
 
