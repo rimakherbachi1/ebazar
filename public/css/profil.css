@@ -13,18 +13,18 @@
         }
         
         
-.solde-section, .profile-details {
+.stat, .profile-details {
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
-.solde-section h3 { 
-    font-size: 1.2em;
+.stat h4 { 
+    font-size: 30px;
      color: #555;
       margin-bottom: 10px; }
-.solde-section .solde-montant { 
-    font-size: 3em; 
+.stat{ 
+    font-size: 25px; 
     font-weight: 700; 
     color: #000; }
 .profile-details h3 { 

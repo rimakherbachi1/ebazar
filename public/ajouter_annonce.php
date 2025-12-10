@@ -22,39 +22,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $livraison_main = isset($_POST['livraison_main']) ? 1 : 0;
 
     
-    if (empty($titre) || empty($description) || empty($prix) || $categorie_id === 0) {
-        $erreur[] = "Veuillez remplir tous les champs obligatoires.";
+    
+    if (empty($titre) || empty($description) || $categorie_id === 0) {
+        $erreur[] = "Veuillez remplir le titre, la description et choisir une catégorie.";
     }
-    if ($prix <= 0 || !is_numeric($prix)) {
-        $erreur[] = "Le prix doit être un nombre positif.";
+    
+    if (strlen($titre) < 5 || strlen($titre) > 30) {
+        $erreur[] = "Le titre doit faire entre 5 et 30 caractères.";
     }
+
+    if (strlen($description) < 5 || strlen($description) > 200) {
+        $erreur[] = "La description doit faire entre 5 et 200 caractères.";
+    }
+    
+    if (!is_numeric($prix) || $prix < 0) {
+        $erreur[] = "Le prix doit être un nombre positif (ou zéro pour un don).";
+    }
+    
     
     $chemins_photos = [];
     $dossier_uploads = __DIR__ . '/uploads/'; 
     $photos_soumises = $_FILES['photos'] ?? [];
+    $limite_taille = 204800; 
+    $max_photos = 5; 
 
-    if (!empty($photos_soumises['name'][0])) {
+    if (empty($photos_soumises['name'][0])) {
+        $erreur[] = "Veuillez télécharger au moins une photo.";
+    } else {
         
         $nombre_fichiers = count($photos_soumises['name']);
         
-        for ($i = 0; $i < min($nombre_fichiers, 5); $i++) { 
+        for ($i = 0; $i < min($nombre_fichiers, $max_photos); $i++) { 
             if ($photos_soumises['error'][$i] === UPLOAD_ERR_OK) {
                 
+                $fichier_temporaire = $photos_soumises['tmp_name'][$i];
+                $taille_fichier = $photos_soumises['size'][$i];
+                $type_fichier = $photos_soumises['type'][$i];
+                
+                if ($type_fichier !== 'image/jpeg') {
+                    $erreur[] = "La photo " . ($i + 1) . " doit être au format JPEG.";
+                    continue; 
+                }
+                
+                if ($taille_fichier > $limite_taille) {
+                    $erreur[] = "La photo " . ($i + 1) . " dépasse la taille limite de 200 Kio.";
+                    continue; 
+                }
+
                 $nom_unique = uniqid('annonce_') . '_' . basename($photos_soumises['name'][$i]);
                 $chemin_destination = $dossier_uploads . $nom_unique;
                 
-                if (move_uploaded_file($photos_soumises['tmp_name'][$i], $chemin_destination)) {
-                    
+                if (move_uploaded_file($fichier_temporaire, $chemin_destination)) {
                     $chemins_photos[] = 'uploads/' . $nom_unique;
                 } else {
-                    $erreur[] = "Erreur lors du déplacement du fichier " . ($i + 1) . ".";
+                    $erreur[] = "Erreur lors du déplacement du fichier " . ($i + 1) . ". Vérifiez les permissions du dossier 'uploads'.";
                 }
+            } else if ($photos_soumises['error'][$i] != UPLOAD_ERR_NO_FILE) {
+                $erreur[] = "Erreur serveur lors de l'upload de la photo " . ($i + 1) . ". Code d'erreur: " . $photos_soumises['error'][$i];
             }
         }
-    } else {
-        $erreur[] = "Veuillez télécharger au moins une photo.";
+        
+       if (empty($chemins_photos) && empty($erreur)) {
+             $erreur[] = "Aucune photo valide n'a pu être téléchargée (vérifiez taille/format).";
+        }
     }
-
     if (empty($erreur)) {
         try {
             $pdo->beginTransaction();
@@ -107,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/ajouter_annonce.css"> 
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
-   
+    
 </head>
 
 <body>
@@ -157,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" enctype="multipart/form-data">
             
             <div class="form-group">
-                <label for="titre">Titre de l'annonce (max 30 caractères) :</label>
+                <label for="titre">Titre de l'annonce (min 5, max 30 caractères) :</label>
                 <input type="text" id="titre" name="titre" required maxlength="30" value="<?= htmlspecialchars($_POST['titre'] ?? '') ?>">
             </div>
 
@@ -174,13 +205,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label for="description">Description :</label>
-                <textarea id="description" name="description" rows="5" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+                <label for="description">Description (min 5, max 200 caractères) :</label>
+                <textarea id="description" name="description" rows="5" required maxlength="200"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="prix">Prix (€) :</label>
-                <input type="number" id="prix" name="prix" step="0.01" min="0.01" required value="<?= htmlspecialchars($_POST['prix'] ?? '') ?>">
+                <input type="number" id="prix" name="prix" step="0.01" min="0" required value="<?= htmlspecialchars($_POST['prix'] ?? '') ?>">
             </div>
 
             <div class="form-group">
@@ -196,8 +227,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label for="photos">Photos (Max. 5 fichiers) :</label>
-                <input type="file" id="photos" name="photos[]" accept="image/*" multiple required>
+                <label for="photos">Photos (Max. 5 fichiers JPEG, 200 Kio chacun) :</label>
+                <input type="file" id="photos" name="photos[]" accept="image/jpeg" multiple required>
             </div>
 
             <button type="submit" class="submit-btn">Soumettre l'Annonce</button>

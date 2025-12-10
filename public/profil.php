@@ -172,10 +172,8 @@ $date_inscription = date('d/m/Y', strtotime($user_info['date_creation']));
 
     <div class="profile-grid">
         
-        <div class="solde-section">
-            <h3>Mon Solde Actuel</h3>
-            <div class="solde-montant"><?= number_format($solde_actuel, 2, ',', ' ') ?> €</div>
-            <hr>
+        <div class="stat">
+            
             <h4>Statistiques</h4>
             <p>Membre depuis : <strong><?= $date_inscription ?></strong></p>
             <p>Annonces postées : <strong><?= htmlspecialchars($nombre_annonces) ?></strong></p>

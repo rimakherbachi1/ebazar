@@ -203,3 +203,23 @@ nav a:hover {
 .ajouter_annonce{
     color: rgb(69, 18, 136);
 }
+ 
+.pagination { display: flex; 
+    justify-content: center; 
+    padding: 20px 0; 
+}
+        
+
+.pagination a { 
+    text-decoration: none; 
+    padding: 8px 12px; 
+    margin: 0 4px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px;
+     color: #000;
+}
+
+.pagination a.active { background-color: #000; 
+    color: white; 
+    border-color: #000; }
+    
