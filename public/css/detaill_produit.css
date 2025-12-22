@@ -46,6 +46,9 @@ body {
     padding: 20px;
     justify-content: center;
 }
+.butt a {
+    text-decoration: none;
+}
 .reserver-button{
     
         width: 250px;
@@ -57,6 +60,7 @@ body {
         cursor: pointer;
         margin-bottom: 20px;
         font-size: 22px;
+        padding-left: 2cm;
        
 
 }
@@ -70,7 +74,8 @@ body {
         cursor: pointer;
         margin-bottom: 20px;
         font-size: 22px;
-   
+        padding-left: 2cm;
+        
 }
 
 .livraison-options {

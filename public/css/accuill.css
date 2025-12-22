@@ -222,4 +222,20 @@ nav a:hover {
 .pagination a.active { background-color: #000; 
     color: white; 
     border-color: #000; }
+
+
+.btn-recu {
+        background-color: #8e55d2;
+    color: white;
+        border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+.btn-recu:hover { background-color: rgb(69, 18, 136); }
     

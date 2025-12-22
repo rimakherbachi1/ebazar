@@ -61,9 +61,9 @@ if ($check->rowCount() > 0) {
 <body>
 
 <header class="navbar">
-    <div class="logo">
-        <span>E-Bazar</span><span class="dot">●</span>
-    </div>
+   <div class="logo">
+        <a href="index.php"><span>E-Bazar</span><span class="dot">●</span></a>
+       </div>
 
     <div>
         <a href="connexion.php"><strong>Se connecter</strong></a>

@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
        
        if ($user['role'] === 'ADMIN') {
-            header("Location: admin_index.php");
+            header("Location: admin_utilisateurs.php");
             exit();
         } else { 
             header("Location: index.php");
@@ -49,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
     <header class="navbar">
-        <div class="logo">
-            <span>E-Bazar</span><span class="dot">●</span>
-        </div>
+       <div class="logo">
+        <a href="index.php"><span>E-Bazar</span><span class="dot">●</span></a>
+       </div>
 
         <div>
             <a href="connexion.php"><strong>Se connecter</strong></a>

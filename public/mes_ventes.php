@@ -53,9 +53,9 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
 <body>
 <header class="navbar">
     <div class="logo">
-        <span>E-Bazar</span><span class="dot">●</span>
-        <input type="text" placeholder="Que cherchez-vous ?">
-    </div>
+        <a href="index.php"><span>E-Bazar</span><span class="dot">●</span></a>
+       <input type="text" id="barre-recherche" placeholder="Que cherchez-vous ? ">
+       </div>
 
     <div>
         <?php if (!isset($_SESSION['id'])): ?>
