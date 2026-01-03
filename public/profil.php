@@ -5,7 +5,8 @@ if (session_status() === PHP_SESSION_NONE) {
 include '../config/config.php'; 
 
 if (!isset($_SESSION['id'])) {
-    header("Location: connexion.php");
+    $redirect = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: connexion.php?redirect={$redirect}");
     exit();
 }
 
@@ -124,9 +125,9 @@ $date_inscription = date('d/m/Y', strtotime($user_info['date_creation']));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Profil – E-Bazar</title>
-    <link rel="stylesheet" href="../css/accuill.css?v=99">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/profil.css">
+    <link rel="stylesheet" href="css/accuill.css?v=99">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/profil.css">
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
     
 </head>
@@ -136,7 +137,6 @@ $date_inscription = date('d/m/Y', strtotime($user_info['date_creation']));
 <header class="navbar">
    <div class="logo">
         <a href="index.php"><span>E-Bazar</span><span class="dot">●</span></a>
-       <input type="text" id="barre-recherche" placeholder="Que cherchez-vous ? ">
        </div>
 
     <div>
@@ -144,7 +144,8 @@ $date_inscription = date('d/m/Y', strtotime($user_info['date_creation']));
             <a href="connexion.php"><strong>Se connecter</strong></a>
             <a href="inscription.php" class="btn-outline">S'inscrire</a>
         <?php else: ?>
-            <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+            <a href="profil.php"><button class="icon"><img src="image/comptenoir.png" alt="Compte"></button></a>
+            <a href="deconnexion.php">Deconnexion</a>
         <?php endif; ?>
     </div>
 </header>
@@ -207,5 +208,6 @@ $date_inscription = date('d/m/Y', strtotime($user_info['date_creation']));
 
 </main>
 
+<script src="js/app.js" defer></script>
 </body>
 </html>

@@ -1,28 +1,78 @@
-.container-achat { max-width: 
-    600px; margin: 
-    50px auto; padding: 
-    20px; border: 1px solid #ddd; 
-    border-radius: 8px; 
-    font-family: 'Poppins', sans-serif; }
-.facture { background: #f9f9f9; 
-    padding: 20px; 
-    border: 2px dashed #333; 
-    margin-top: 20px; }
-.error { color: red; 
-    margin-bottom: 10px; }
-.form-group { margin-bottom: 15px; }
-label { display: block; 
-    margin-bottom: 5px; 
-    font-weight: bold; }
-input, select { width: 100%;
-     padding: 10px; 
-     border: 1px solid #ccc; 
-     border-radius: 4px; }
-.btn-valider { background: rgb(69, 18, 136);
-    color: white; border: none; 
-    padding: 15px; 
-    width: 100%; 
-    cursor: pointer; 
-    font-size: 16px; 
-    margin-top: 10px; }
-    
+body {
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.container-achat {
+    width: min(680px, 92%);
+    margin: 40px auto;
+    padding: 26px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--shadow);
+    font-family: "Poppins", sans-serif;
+}
+
+.container-achat h2 {
+    font-family: "Italiana", serif;
+    font-size: 30px;
+    margin-bottom: 16px;
+}
+
+.facture {
+    background: var(--surface-muted);
+    padding: 20px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    margin-top: 20px;
+}
+
+.error {
+    color: #9b1c1c;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.btn-valider {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-valider:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.container-achat a {
+    color: var(--accent-cool);
+    text-decoration: none;
+    font-weight: 600;
+}

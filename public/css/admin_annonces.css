@@ -1,41 +1,42 @@
-.produit { 
-            position: relative; 
-            padding-bottom: 50px;
-    }
+.admin-container {
+    width: min(1200px, 94%);
+    margin: 20px auto 60px;
+}
 
+.produit {
+    position: relative;
+    padding-bottom: 60px;
+}
 
 .admin-action-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 10px;
-            background-color: #fff;
-            border-top: 1px solid #eee;
-            text-align: center;
- }
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
 
+.delete-btn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 90%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-.delete-btn { 
-            background-color: rgb(69, 18, 136);
-            color: white; 
-            border: none; 
-            padding: 8px 12px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 0.9em; 
-            width: 90%; 
-            transition: background-color 0.2s;
-        }
-       
+.delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
 
-.message-success { background-color: #d4edda; 
-    color: #155724; padding: 10px; 
-    margin-bottom: 20px; 
-    border-radius: 4px; }
-.message-error { background-color: #f8d7da; 
-    color: #721c24; 
-    padding: 10px; 
-    margin-bottom: 20px; 
-    border-radius: 4px; }
-    
+.message-success,
+.message-error {
+    margin: 10px 0 20px;
+}

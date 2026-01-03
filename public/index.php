@@ -114,8 +114,8 @@ $categories = $pdo->query($sql_categories)->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil – E-Bazar</title>
-    <link rel="stylesheet" href="../css/accuill.css?v=99">
-    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="css/accuill.css?v=99">
+    <link rel="stylesheet" href="css/header.css">
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
     
 </head>
@@ -133,7 +133,8 @@ $categories = $pdo->query($sql_categories)->fetchAll(PDO::FETCH_ASSOC);
             <a href="connexion.php"><strong>Se connecter</strong></a>
             <a href="inscription.php" class="btn-outline">S'inscrire</a>
         <?php else: ?>
-            <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+            <a href="profil.php"><button class="icon"><img src="image/comptenoir.png" alt="Compte"></button></a>
+            <a href="deconnexion.php">Deconnexion</a>
         <?php endif; ?>
     </div>
 </header>
@@ -163,12 +164,9 @@ $categories = $pdo->query($sql_categories)->fetchAll(PDO::FETCH_ASSOC);
             <?php foreach ($annonces as $annonce): ?>
                 <div class="produit" onclick="window.location.href='annonce.php?id=<?= $annonce['id'] ?>'">
 
+                    <?php $photo_src = ebazar_photo_src($annonce['photo_principale']); ?>
                     <div class="image-container">
-                        <?php if ($annonce['photo_principale']): ?>
-                             <img src="../<?= $annonce['photo_principale'] ?>" alt="<?= htmlspecialchars($annonce['titre']) ?>">
-                        <?php else: ?>
-                            <img src="../image/default.jpg" alt="Image par défaut">
-                        <?php endif; ?>
+                        <img src="<?= htmlspecialchars($photo_src) ?>" alt="<?= htmlspecialchars($annonce['titre']) ?>">
                     </div>
 
                     <p><?= htmlspecialchars($annonce['titre']) ?></p>
@@ -191,5 +189,6 @@ $categories = $pdo->query($sql_categories)->fetchAll(PDO::FETCH_ASSOC);
 
 </main>
 
+<script src="js/app.js" defer></script>
 </body>
 </html>

@@ -53,8 +53,8 @@ if ($check->rowCount() > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - E-Bazar</title>
 
-    <link rel="stylesheet" href="/css/inscription.css?v=2">
-    <link rel="stylesheet" href="/css/header.css?v=2">
+    <link rel="stylesheet" href="css/inscription.css?v=2">
+    <link rel="stylesheet" href="css/header.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@100;300;400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -74,7 +74,7 @@ if ($check->rowCount() > 0) {
 <main class="login-container">
 
     <div class="image-section">
-        <img src="../image/conn.jpg" alt="Inscription E-Bazar">
+        <img src="image/conn.jpg" alt="Inscription E-Bazar">
         <h2 class="overlay-text">Rejoignez E-Bazar.</h2>
     </div>
 
@@ -82,7 +82,7 @@ if ($check->rowCount() > 0) {
         <h2>Inscription</h2>
 
         <?php if (!empty($erreur)): ?>
-            <p style="color:red; margin-bottom:10px; margin-left:150px;">
+            <p class="form-error">
                 <?= $erreur ?>
             </p>
         <?php endif; ?>

@@ -3,11 +3,17 @@
 include '../config/config.php';
 
 $erreur = "";
+$redirect = '';
+
+if (isset($_GET['redirect'])) {
+    $redirect = trim($_GET['redirect']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $email = trim($_POST['email']);
     $motdepasse = trim($_POST['motdepasse']);
+    $redirect = trim($_POST['redirect'] ?? $redirect);
 
     $req = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = ?");
     $req->execute([$email]);
@@ -18,9 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['id'] = $user['id'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
+        $_SESSION['pseudo'] = $user['pseudo'];
 
-       
-       if ($user['role'] === 'ADMIN') {
+        $redirect_safe = '';
+        if (!empty($redirect)
+            && strpos($redirect, '://') === false
+            && strpos($redirect, "\n") === false
+            && strpos($redirect, "\r") === false
+            && substr($redirect, 0, 2) !== '//') {
+            $redirect_safe = $redirect;
+        }
+
+        if (!empty($redirect_safe)) {
+            header("Location: {$redirect_safe}");
+            exit();
+        }
+
+        if ($user['role'] === 'ADMIN') {
             header("Location: admin_utilisateurs.php");
             exit();
         } else { 
@@ -41,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - E-Bazar</title>
 
-    <link rel="stylesheet" href="../css/connexion.css">
-    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="css/connexion.css">
+    <link rel="stylesheet" href="css/header.css">
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
 </head>
 
@@ -63,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main class="login-container">
 
         <div class="image-section">
-            <img src="../image/conn.jpg" alt="Connexion E-Bazar">
+            <img src="image/conn.jpg" alt="Connexion E-Bazar">
         </div>
 
         <div class="login-form">
@@ -71,12 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2>Connexion</h2>
 
             <?php if (!empty($erreur)): ?>
-                <p style="color:red; margin-bottom:10px; margin-left:150px;">
+                <p class="form-error">
                     <?= $erreur ?>
                 </p>
             <?php endif; ?>
 
             <form method="POST">
+                <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
 
                 <input type="email" name="email" placeholder="Adresse e-mail" required>
 

@@ -34,7 +34,7 @@ $stmt_photos = $pdo->prepare("
 ");
 $stmt_photos->execute([$annonce_id]);
 $photos = $stmt_photos->fetchAll(PDO::FETCH_COLUMN); 
-$photo_principale = !empty($photos) ? $photos[0] : 'image/default.jpg';
+$photo_principale = ebazar_photo_src($photos[0] ?? '');
 
 $vendeur_id = $annonce['vendeur_id'];
 $stmt_autres_annonces = $pdo->prepare("
@@ -74,9 +74,9 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($annonce['titre']) ?> - E-Bazar</title>
-    <link rel="stylesheet" href="../css/accuill.css">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/detaill_produit.css"> 
+    <link rel="stylesheet" href="css/accuill.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/detaill_produit.css"> 
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -92,7 +92,8 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll
                 <a href="connexion.php"><strong>Se connecter</strong></a>
                 <a href="inscription.php" class="btn-outline">S'inscrire</a>
             <?php else: ?>
-                <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Profil"></button></a>
+                <a href="profil.php"><button class="icon"><img src="image/comptenoir.png" alt="Profil"></button></a>
+                <a href="deconnexion.php">Deconnexion</a>
             <?php endif; ?>
         </div>
     </header>
@@ -111,18 +112,19 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll
                     <?php if (count($photos) > 1): ?>
                     <div class="thumbnails-column"> 
                         <?php foreach ($photos as $index => $photo_chemin): ?>
+                            <?php $thumb_src = ebazar_photo_src($photo_chemin); ?>
                             <img 
-                                src="../<?= htmlspecialchars($photo_chemin) ?>" 
+                                src="<?= htmlspecialchars($thumb_src) ?>" 
                                 alt="Miniature <?= $index + 1 ?>" 
                                 class="thumbnail-item <?= ($index === 0) ? 'active' : '' ?>"
-                                data-src="../<?= htmlspecialchars($photo_chemin) ?>"
+                                data-src="<?= htmlspecialchars($thumb_src) ?>"
                             >
                         <?php endforeach; ?>
                     </div>
                     <?php endif; ?>
 
                     <div class="main-image-container">
-                        <img id="main-image" src="../<?= htmlspecialchars($photo_principale) ?>" alt="<?= htmlspecialchars($annonce['titre']) ?>">
+                        <img id="main-image" src="<?= htmlspecialchars($photo_principale) ?>" alt="<?= htmlspecialchars($annonce['titre']) ?>">
                     </div>
                 </div>
             </div>
@@ -153,8 +155,8 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll
                         <a href="achat.php?id=<?= $annonce['id'] ?>" class="acheter-button">Acheter</a>
                         <a href="reserver.php?id=<?= $annonce['id'] ?>" class="reserver-button">Réserver</a>
                     <?php else: ?>
-                        <a href="connexion.php" class="acheter-button">Acheter</a>
-                        <a href="connexion.php" class="reserver-button">Réserver</a>
+                        <a href="achat.php?id=<?= $annonce['id'] ?>" class="acheter-button">Acheter</a>
+                        <a href="reserver.php?id=<?= $annonce['id'] ?>" class="reserver-button">Réserver</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -174,9 +176,10 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll
                 <?php if (!empty($autres_annonces)): ?>
                     <div class="produits">
                         <?php foreach ($autres_annonces as $autre): ?>
+                            <?php $autre_photo = ebazar_photo_src($autre['photo_principale']); ?>
                             <div class="produit" onclick="window.location.href='annonce.php?id=<?= $autre['id'] ?>'">
                                 <div class="image-container">
-                                    <img src="../<?= $autre['photo_principale'] ?: 'image/default.jpg' ?>" alt="<?= htmlspecialchars($autre['titre']) ?>">
+                                    <img src="<?= htmlspecialchars($autre_photo) ?>" alt="<?= htmlspecialchars($autre['titre']) ?>">
                                 </div>
                                 <p><?= htmlspecialchars($autre['titre']) ?></p>
                                 <h2><?= number_format($autre['prix'], 2, ',', ' ') ?> €</h2>
@@ -190,30 +193,8 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetchAll
         </section>
     </main>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            const mainImage = document.getElementById('main-image');
-            const thumbnails = document.querySelectorAll('.thumbnail-item');
-            thumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function() {
-                    mainImage.src = this.getAttribute('data-src');
-                    thumbnails.forEach(item => item.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            const tabLinks = document.querySelectorAll('.tab-link');
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    tabLinks.forEach(l => l.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById(this.getAttribute('data-tab')).classList.add('active');
-                });
-            });
-        });
-    </script>
+    
+    <script src="js/app.js" defer></script>
+    <script src="js/pagination.js" ></script>
 </body>
 </html>

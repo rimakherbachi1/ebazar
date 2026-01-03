@@ -28,17 +28,16 @@ $stmt->execute([$annonce_id]);
 $annonce = $stmt->fetch();
 
 if (!$annonce) {
-    die("Annonce introuvable ou déjà vendue.");
+    die("Annonce introuvable ou deja indisponible.");
 }
 
 if ($annonce['vendeur_id'] == $acheteur_id) {
-    die("Vous ne pouvez pas acheter votre propre article.");
+    die("Vous ne pouvez pas reserver votre propre article.");
 }
 
 $success = false;
-$facture = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_reservation'])) {
     $mode_livraison = $_POST['mode_livraison'] ?? '';
     $mode_valide = false;
 
@@ -53,15 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
         try {
             $pdo->beginTransaction();
 
-            $stmt_achat = $pdo->prepare("
+            $stmt_reservation = $pdo->prepare("
                 INSERT INTO achats (annonce_id, acheteur_id, mode_livraison, statut) 
                 VALUES (?, ?, ?, 'EN_ATTENTE')
             ");
-            $stmt_achat->execute([$annonce_id, $acheteur_id, $mode_livraison]);
+            $stmt_reservation->execute([$annonce_id, $acheteur_id, $mode_livraison]);
 
             $stmt_update = $pdo->prepare("
                 UPDATE annonces 
-                SET statut = 'VENDU' 
+                SET statut = 'RESERVER' 
                 WHERE id = ? AND statut = 'EN_VENTE'
             ");
             $stmt_update->execute([$annonce_id]);
@@ -69,27 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
                 throw new Exception("Annonce plus disponible.");
             }
 
-            $stmt_acheteur = $pdo->prepare("SELECT pseudo FROM utilisateurs WHERE id = ?");
-            $stmt_acheteur->execute([$acheteur_id]);
-            $acheteur = $stmt_acheteur->fetch();
-
             $pdo->commit();
-
-            $facture = [
-                'vendeur' => $annonce['vendeur_pseudo'],
-                'acheteur' => $acheteur['pseudo'],
-                'objet' => $annonce['titre'],
-                'prix' => $annonce['prix'],
-                'livraison' => ($mode_livraison === 'POSTALE') ? 'Livraison Postale' : 'Remise en main propre',
-                'date' => date('d/m/Y H:i')
-            ];
             $success = true;
-
         } catch (Exception $e) {
             $pdo->rollBack();
             $erreur = $e->getMessage();
             if ($erreur === '') {
-                $erreur = "Une erreur est survenue lors de la transaction.";
+                $erreur = "Erreur lors de la reservation.";
             }
         }
     } else {
@@ -102,9 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Finaliser l'achat - E-Bazar</title>
+    <title>Reservation - E-Bazar</title>
     <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/achat.css"> 
+    <link rel="stylesheet" href="css/achat.css">
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -119,9 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
 
     <div class="container-achat">
         <?php if (!$success): ?>
-            <h2>Finaliser votre achat</h2>
+            <h2>Reserver ce bien</h2>
             <p>Objet : <strong><?= htmlspecialchars($annonce['titre']) ?></strong></p>
-            <p>Total : <strong><?= number_format($annonce['prix'], 2, ',', ' ') ?> €</strong></p>
+            <p>Prix : <strong><?= number_format($annonce['prix'], 2, ',', ' ') ?> €</strong></p>
 
             <?php if (isset($erreur)): ?>
                 <p class="error"><?= $erreur ?></p>
@@ -140,24 +125,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
                     </select>
                 </div>
 
-                <button type="submit" name="valider_achat" class="btn-valider">Confirmer l'achat</button>
+                <button type="submit" name="valider_reservation" class="btn-valider">Confirmer la reservation</button>
             </form>
 
         <?php else: ?>
             <div class="facture">
-                <h1 style="text-align: center;">RECAPITULATIF D'ACHAT</h1>
+                <h1 style="text-align: center;">RESERVATION CONFIRMEE</h1>
                 <hr>
-                <p><strong>Date :</strong> <?= $facture['date'] ?></p>
-                <p><strong>Vendeur :</strong> <?= htmlspecialchars($facture['vendeur']) ?></p>
-                <p><strong>Acheteur :</strong> <?= htmlspecialchars($facture['acheteur']) ?></p>
+                <p><strong>Vendeur :</strong> <?= htmlspecialchars($annonce['vendeur_pseudo']) ?></p>
+                <p><strong>Produit :</strong> <?= htmlspecialchars($annonce['titre']) ?></p>
+                <p><strong>Prix :</strong> <?= number_format($annonce['prix'], 2, ',', ' ') ?> €</p>
                 <hr>
-                <p><strong>Produit :</strong> <?= htmlspecialchars($facture['objet']) ?></p>
-                <p><strong>Mode de livraison :</strong> <?= $facture['livraison'] ?></p>
-                <h2 style="text-align: right;">Total : <?= number_format($facture['prix'], 2, ',', ' ') ?> €</h2>
-                <hr>
-                <p style="text-align: center; font-style: italic;">Merci pour votre achat sur E-Bazar !</p>
-                <button onclick="window.print()" class="btn-valider">Imprimer le recapitulatif</button>
-                <a href="index.php" style="display:block; text-align:center; margin-top:10px;">Retour à l'accueil</a>
+                <p style="text-align: center; font-style: italic;">Votre reservation est enregistree.</p>
+                <a href="mes_achats.php" style="display:block; text-align:center; margin-top:10px;">Voir mes achats</a>
+                <a href="index.php" style="display:block; text-align:center; margin-top:10px;">Retour a l'accueil</a>
             </div>
         <?php endif; ?>
     </div>

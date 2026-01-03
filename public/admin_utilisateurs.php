@@ -4,7 +4,13 @@ include '../config/config.php';
 $erreur = '';
 $success = '';
 
-if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'ADMIN') {
+if (!isset($_SESSION['id'])) {
+    $redirect = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: connexion.php?redirect={$redirect}");
+    exit();
+}
+
+if ($_SESSION['role'] !== 'ADMIN') {
     header("Location: index.php");
     exit();
 }
@@ -52,10 +58,10 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration – Utilisateurs</title>
-    <link rel="stylesheet" href="../css/accuill.css">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/admin_utilisateurs.css">
-    <link rel="stylesheet" href="../css/admin.css"> <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/accuill.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/admin_utilisateurs.css">
+    <link rel="stylesheet" href="css/admin.css"> <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
     
 </head>
 
@@ -64,10 +70,9 @@ try {
 <header class="navbar">
     <div class="logo">
         <span>E-Bazar</span><span class="dot">●</span>
-        <input type="text" placeholder="Que cherchez-vous ?">
     </div>
     <div>
-        <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+        <a href="deconnexion.php">Deconnexion</a>
     </div>
 </header>
 

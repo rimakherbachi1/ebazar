@@ -66,6 +66,9 @@ CREATE TABLE annonces (
     FOREIGN KEY (categorie_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
+CREATE INDEX idx_annonces_statut_vendeur ON annonces (statut, vendeur_id);
+CREATE INDEX idx_annonces_statut_categorie ON annonces (statut, categorie_id);
+
 -- -----------------------------------------------------
 --   TABLE PHOTOS
 -- -----------------------------------------------------
@@ -77,6 +80,8 @@ CREATE TABLE photos (
 
     FOREIGN KEY (annonce_id) REFERENCES annonces(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_photos_annonce_position ON photos (annonce_id, position);
 
 -- -----------------------------------------------------
 --   TABLE ACHATS
@@ -93,3 +98,6 @@ CREATE TABLE achats (
     FOREIGN KEY (annonce_id) REFERENCES annonces(id) ON DELETE CASCADE,
     FOREIGN KEY (acheteur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_achats_acheteur_statut ON achats (acheteur_id, statut);
+CREATE INDEX idx_achats_annonce ON achats (annonce_id);

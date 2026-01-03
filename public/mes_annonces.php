@@ -2,11 +2,39 @@
 include '../config/config.php'; 
 
 if (!isset($_SESSION['id'])) {
-    header("Location: connexion.php");
+    $redirect = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: connexion.php?redirect={$redirect}");
     exit();
 }
 
 $current_user_id = $_SESSION['id'];
+$erreur = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_annonce'])) {
+    $annonce_id = (int)($_POST['annonce_id'] ?? 0);
+
+    if ($annonce_id > 0) {
+        try {
+            $stmt_delete = $pdo->prepare("
+                UPDATE annonces 
+                SET statut = 'SUPPRIME' 
+                WHERE id = ? AND vendeur_id = ? AND statut = 'EN_VENTE'
+            ");
+            $stmt_delete->execute([$annonce_id, $current_user_id]);
+
+            if ($stmt_delete->rowCount() > 0) {
+                $success = "Annonce supprimée.";
+            } else {
+                $erreur = "Impossible de supprimer cette annonce.";
+            }
+        } catch (Exception $e) {
+            $erreur = "Erreur lors de la suppression de l'annonce.";
+        }
+    } else {
+        $erreur = "Annonce invalide.";
+    }
+}
 
 $statuts_affiches = ['EN_VENTE', 'SUPPRIME'];
 $annonces_par_statut = [];
@@ -44,9 +72,9 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Annonces - E-Bazar</title>
-    <link rel="stylesheet" href="../css/accuill.css?v=99">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/detaill_produit.css">
+    <link rel="stylesheet" href="css/accuill.css?v=99">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/detaill_produit.css">
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
 </head>
 
@@ -54,7 +82,6 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
 <header class="navbar">
    <div class="logo">
         <a href="index.php"><span>E-Bazar</span><span class="dot">●</span></a>
-       <input type="text" id="barre-recherche" placeholder="Que cherchez-vous ? ">
        </div>
 
     <div>
@@ -62,7 +89,8 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
             <a href="connexion.php"><strong>Se connecter</strong></a>
             <a href="inscription.php" class="btn-outline">S'inscrire</a>
         <?php else: ?>
-            <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+            <a href="profil.php"><button class="icon"><img src="image/comptenoir.png" alt="Compte"></button></a>
+            <a href="deconnexion.php">Deconnexion</a>
         <?php endif; ?>
     </div>
 </header>
@@ -80,6 +108,14 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
         <p>Gestion</p>
         <h2>Mes Annonces</h2>
     </div>
+
+    <?php if (!empty($success)): ?>
+        <div class="message-success"><?= htmlspecialchars($success) ?></div>
+    <?php endif; ?>
+
+    <?php if (!empty($erreur)): ?>
+        <div class="message-error"><?= htmlspecialchars($erreur) ?></div>
+    <?php endif; ?>
 
     <section class="product-suggestions">
 
@@ -108,16 +144,19 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
                 <?php if (!empty($annonces_par_statut[$statut])): ?>
                     <div class="produits">
                         <?php foreach ($annonces_par_statut[$statut] as $annonce_statut): ?>
+                            <?php $photo_src = ebazar_photo_src($annonce_statut['photo_principale']); ?>
                             <div class="produit" >
                                 <div class="image-container">
-                                    <?php if ($annonce_statut['photo_principale']): ?>
-                                        <img src="../<?= $annonce_statut['photo_principale'] ?>" alt="<?= htmlspecialchars($annonce_statut['titre']) ?>">
-                                    <?php else: ?>
-                                        <img src="../image/default.jpg" alt="Image par défaut">
-                                    <?php endif; ?>
+                                    <img src="<?= htmlspecialchars($photo_src) ?>" alt="<?= htmlspecialchars($annonce_statut['titre']) ?>">
                                 </div>
                                 <p><?= htmlspecialchars($annonce_statut['titre']) ?></p>
                                 <p class="status-tag">Statut: <?= htmlspecialchars(str_replace('_', ' ', $annonce_statut['statut'])) ?></p>
+                                <?php if ($statut === 'EN_VENTE'): ?>
+                                    <form method="POST" class="card-actions" onsubmit="return confirm('Confirmer la suppression de cette annonce ?');">
+                                        <input type="hidden" name="annonce_id" value="<?= $annonce_statut['id'] ?>">
+                                        <button type="submit" name="supprimer_annonce" class="delete-btn">Supprimer</button>
+                                    </form>
+                                <?php endif; ?>
                                 <h2><?= number_format($annonce_statut['prix'], 2, ',', ' ') ?> €</h2>
                             </div>
                         <?php endforeach; ?>
@@ -132,23 +171,8 @@ $categories_nav = $pdo->query("SELECT * FROM categories ORDER BY nom ASC")->fetc
     </section>
 
 </main>
- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabLinks = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab-content');
+<script src="js/app.js" defer></script>
 
-        tabLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-tab');
-
-                tabLinks.forEach(l => l.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-
-                this.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
-            });
-        });
-    });
-</script>
+<script src="js/table.js" ></script>
 </body>
 </html>

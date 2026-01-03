@@ -1,5 +1,4 @@
 <?php
-// Redirection si page admin mais pas admin
 function estAdmin() {
     return isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN';
 }

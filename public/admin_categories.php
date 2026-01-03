@@ -8,7 +8,13 @@ $erreur = '';
 $success = '';
 
 // Vérification de la session et du rôle ADMIN (Sécurité)
-if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'ADMIN') {
+if (!isset($_SESSION['id'])) {
+    $redirect = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: connexion.php?redirect={$redirect}");
+    exit();
+}
+
+if ($_SESSION['role'] !== 'ADMIN') {
     header("Location: index.php");
     exit();
 }
@@ -42,6 +48,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajouter_categorie']))
 
 
 // --- 2. RÉCUPÉRATION DE TOUTES LES CATÉGORIES (pour l'affichage) ---
+// --- 2. RENOMMAGE D'UNE CATEGORIE ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['renommer_categorie'])) {
+    $categorie_id = (int)($_POST['categorie_id'] ?? 0);
+    $nouveau_nom = trim($_POST['nouveau_nom'] ?? '');
+
+    if ($categorie_id <= 0 || $nouveau_nom === '') {
+        $erreur = "Veuillez choisir une categorie et saisir un nouveau nom.";
+    } else {
+        try {
+            $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM categories WHERE nom = ? AND id != ?");
+            $stmt_check->execute([$nouveau_nom, $categorie_id]);
+
+            if ($stmt_check->fetchColumn() > 0) {
+                $erreur = "Cette categorie existe deja.";
+            } else {
+                $stmt_update = $pdo->prepare("UPDATE categories SET nom = ? WHERE id = ?");
+                $stmt_update->execute([$nouveau_nom, $categorie_id]);
+                $success = "Categorie renommee avec succes.";
+            }
+        } catch (Exception $e) {
+            $erreur = "Erreur lors du renommage.";
+        }
+    }
+}
+
 try {
     $stmt_categories = $pdo->query("SELECT id, nom, date_creation FROM categories ORDER BY nom ASC");
     $categories = $stmt_categories->fetchAll(PDO::FETCH_ASSOC);
@@ -57,9 +88,9 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration – Catégories</title>
-    <link rel="stylesheet" href="../css/accuill.css?v=99">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/admin_categories.css">
+    <link rel="stylesheet" href="css/accuill.css?v=99">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/admin_categories.css">
      <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
    
 </head>
@@ -69,10 +100,9 @@ try {
 <header class="navbar">
     <div class="logo">
         <span>E-Bazar</span><span class="dot">●</span>
-        <input type="text" placeholder="Que cherchez-vous ?">
     </div>
     <div>
-        <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+        <a href="deconnexion.php">Deconnexion</a>
     </div>
 </header>
 
@@ -101,6 +131,22 @@ try {
         <form method="POST" action="admin_categories.php">
             <input type="text" name="nom_categorie" placeholder="Nom de la nouvelle catégorie" required value="<?= htmlspecialchars($_POST['nom_categorie'] ?? '') ?>">
             <button type="submit" name="ajouter_categorie">Ajouter Catégorie</button>
+        </form>
+    </div>
+
+    <div class="action-form">
+        <h3>Renommer une categorie</h3>
+        <form method="POST" action="admin_categories.php">
+            <select name="categorie_id" required>
+                <option value="">-- Choisir une categorie --</option>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= $cat['id'] ?>" <?= (isset($_POST['categorie_id']) && (int)$_POST['categorie_id'] === (int)$cat['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($cat['nom']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <input type="text" name="nouveau_nom" placeholder="Nouveau nom" required value="<?= htmlspecialchars($_POST['nouveau_nom'] ?? '') ?>">
+            <button type="submit" name="renommer_categorie">Renommer</button>
         </form>
     </div>
     

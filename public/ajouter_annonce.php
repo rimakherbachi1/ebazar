@@ -2,7 +2,8 @@
 include '../config/config.php'; 
 
 if (!isset($_SESSION['id'])) {
-    header("Location: connexion.php");
+    $redirect = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: connexion.php?redirect={$redirect}");
     exit();
 }
 
@@ -40,6 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     
+    if (!$livraison_postale && !$livraison_main) {
+        $erreur[] = "Veuillez choisir au moins un mode de livraison.";
+    }
+
     $chemins_photos = [];
     $dossier_uploads = __DIR__ . '/uploads/'; 
     $photos_soumises = $_FILES['photos'] ?? [];
@@ -134,9 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une annonce - E-Bazar</title>
-    <link rel="stylesheet" href="../css/accuill.css?v=99">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/ajouter_annonce.css"> 
+    <link rel="stylesheet" href="css/accuill.css?v=99">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/ajouter_annonce.css"> 
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
     
 </head>
@@ -153,7 +158,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="connexion.php"><strong>Se connecter</strong></a>
             <a href="inscription.php" class="btn-outline">S'inscrire</a>
         <?php else: ?>
-            <a href="profil.php"><button class="icon"><img src="../image/comptenoir.png" alt="Compte"></button></a>
+            <a href="profil.php"><button class="icon"><img src="image/comptenoir.png" alt="Compte"></button></a>
+            <a href="deconnexion.php">Deconnexion</a>
         <?php endif; ?>
     </div>
 </header>
@@ -236,5 +242,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
 </main>
+<script src="js/app.js" defer></script>
 </body>
 </html>

@@ -21,3 +21,30 @@ try {
 } catch (Exception $e) {
     die("Erreur de connexion à la base : " . $e->getMessage());
 }
+
+function ebazar_photo_src($chemin, $fallback = 'image/haut.jpg') {
+    $path = trim((string) ($chemin ?? ''));
+    if ($path === '') {
+        return $fallback;
+    }
+
+    $path = str_replace('\\', '/', $path);
+    if (preg_match('#^(https?:)?//#', $path) || strpos($path, 'data:') === 0) {
+        return $path;
+    }
+
+    $path = preg_replace('#^(\.\./)+#', '', $path);
+    if (strpos($path, 'public/') === 0) {
+        $path = substr($path, strlen('public/'));
+    }
+    $path = ltrim($path, '/');
+
+    if (strpos($path, 'uploads/') === 0 || strpos($path, 'image/') === 0) {
+        return $path;
+    }
+    if (strpos($path, '/') === false) {
+        return 'uploads/' . $path;
+    }
+
+    return $path;
+}
