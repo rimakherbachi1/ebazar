@@ -4,9 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $DB_HOTE = "localhost";
-$DB_NOM = "ebazar";
-$DB_UTILISATEUR = "root";
-$DB_MOTDEPASSE = "";
+$DB_NOM = "projet";
+$DB_UTILISATEUR = "projet";
+$DB_MOTDEPASSE = "tejorp";
 
 
 try {

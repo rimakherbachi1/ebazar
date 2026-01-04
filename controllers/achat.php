@@ -1,5 +1,5 @@
 <?php
-require_once '../models/Achat.php';
+require_once '../models/achat.php';
 
 class achater {
     private $pdo;

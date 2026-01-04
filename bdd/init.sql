@@ -20,11 +20,11 @@ CREATE TABLE utilisateurs (
 );
 
 -- Ajout de l'administrateur par défaut
--- Mot de passe = admin
+-- Mot de passe = rimarima
 INSERT INTO utilisateurs (pseudo ,email, mot_de_passe, role) VALUES (
     'admin1',
     'admin@ebazar.local',
-    '$2y$10$0e7cVE3D0pY5bY2B2ixO9u6crBqv3TRPZwUuuUspz6FHa3uLAX932', 
+    '$2y$12$TGxqDWeiuKxvIwWlE3DTw.kx/89C8ExgJFXNxZUayR6LfQZEhMyAu', 
     'ADMIN'
 );
 

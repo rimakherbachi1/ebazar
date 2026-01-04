@@ -1,6 +1,6 @@
 <?php
 
-require_once '../models/Annonce.php';
+require_once '../models/annonce.php';
 
 class ajouterannonce
 {
@@ -8,12 +8,11 @@ class ajouterannonce
 
     public function __construct($pdo)
     {
-        $this->annonceModel = new Annonce($pdo);
+        $this->annonceModel = new annonce($pdo);
     }
 
     public function index()
     {
-        session_start();
 
         if (!isset($_SESSION['id'])) {
             $redirect = urlencode($_SERVER['REQUEST_URI']);

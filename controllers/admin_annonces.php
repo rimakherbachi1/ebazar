@@ -1,6 +1,6 @@
 <?php
 
-require_once '../models/Annonce.php';
+require_once '../models/annonce.php';
 
 class adminannonce
 {
