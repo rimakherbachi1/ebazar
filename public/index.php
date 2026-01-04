@@ -188,6 +188,11 @@ $categories = $pdo->query($sql_categories)->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
 </main>
+<footer>
+    <p style="text-align:center; padding:20px; margin-top:40px; color:#666;">
+        © E-Bazar — 2025
+    </p>
+</footer>
 
 <script src="js/app.js" defer></script>
 </body>

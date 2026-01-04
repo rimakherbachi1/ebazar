@@ -161,6 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valider_achat'])) {
             </div>
         <?php endif; ?>
     </div>
-
+    
 </body>
 </html>

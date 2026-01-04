@@ -207,6 +207,11 @@ $date_inscription = date('d/m/Y', strtotime($user_info['date_creation']));
     </div>
 
 </main>
+<footer>
+    <p style="text-align:center; padding:20px; margin-top:40px; color:#666;">
+        © E-Bazar — 2025
+    </p>
+</footer>
 
 <script src="js/app.js" defer></script>
 </body>
